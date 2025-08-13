@@ -1,11 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/QuizQuestion.dart';
 import 'package:flutter_application_1/quizManager.dart';
+import 'package:flutter_application_1/data/questions.dart';
 
-class Questionscreen extends StatelessWidget {
+class Questionscreen extends StatefulWidget {
   Questionscreen(this.activateScreen, {super.key});
   final void Function(ActiveScreen) activateScreen;
+
+  @override
+  State<Questionscreen> createState() => _QuestionscreenState();
+}
+
+class _QuestionscreenState extends State<Questionscreen> {
+  final List<Quizquestion> _questions = questions;
+  int _currentQuestionIndex = 0;
+  List<Map<String, int>> _selectedAnswers = [];
+  void _nextQuestion(int index) {
+    setState(() {
+      _selectedAnswers.add({
+        "correctAnswer": _questions[_currentQuestionIndex].answerIndex,
+        'answer': index,
+      });
+      if (_currentQuestionIndex < _questions.length - 1) {
+        _currentQuestionIndex++;
+      } else {
+        widget.activateScreen(ActiveScreen.result);
+      }
+    });
+  }
+
+  void _previousQuestion() {
+    setState(() {
+      if (_currentQuestionIndex > 0) {
+        _currentQuestionIndex--;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentQuestion = _questions[_currentQuestionIndex];
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -21,38 +55,55 @@ class Questionscreen extends StatelessWidget {
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+
           children: [
-            const Text(
-              "What is fluuter?",
-              style: TextStyle(
-                fontSize: 24,
+            Center(
+              child: Text(
+                currentQuestion.question,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  decoration: TextDecoration.none,
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            ...currentQuestion.choices.map(
+              (choice) => ActionButton(() {
+                _nextQuestion(currentQuestion.choices.indexOf(choice));
+              }, choice),
+            ),
+            const SizedBox(height: 30),
+            OutlinedButton(
+              onPressed: () => _previousQuestion(),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                side: BorderSide(color: Colors.white, width: 1),
+              ),
+              child: Text(
+                "Previous Question",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Question ${_currentQuestionIndex + 1} of ${_questions.length}',
+              style: const TextStyle(
+                fontSize: 16,
                 color: Colors.white,
                 decoration: TextDecoration.none,
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.normal,
               ),
             ),
-            const SizedBox(height: 30),
-            ActionButton(activateScreen, "Answer 1"),
-            ActionButton(activateScreen, "Answer 2"),
-            ActionButton(activateScreen, "Answer 3"),
-            ActionButton(activateScreen, "Answer 4"),
-            const SizedBox(height: 30),
-            OutlinedButton(
-              onPressed: () => activateScreen(ActiveScreen.start),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                side: BorderSide(color: Colors.white, width: 1),
-              ),
-              child: Text("Back"),
-            ), // Container(
-            //   margin: const EdgeInsets.only(top: 50),
-            //   decoration: BoxDecoration(
-            //     border: Border.all(color: Colors.white, width: 2),
-            //     borderRadius: BorderRadius.circular(8),
-            //   ),
-            //   child: const SizedBox(height: 50, width: 400, child:,),
-            // ),
           ],
         ),
       ),
@@ -61,8 +112,8 @@ class Questionscreen extends StatelessWidget {
 }
 
 class ActionButton extends StatelessWidget {
-  const ActionButton(this.activateScreen, this.text, {super.key});
-  final void Function(ActiveScreen)? activateScreen;
+  const ActionButton(this.onPressed, this.text, {super.key});
+  final VoidCallback? onPressed;
   final String text;
   @override
   Widget build(BuildContext context) {
@@ -71,7 +122,7 @@ class ActionButton extends StatelessWidget {
       child: SizedBox(
         width: 440,
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: onPressed,
           style: ElevatedButton.styleFrom(),
           child: Text(text),
         ),
