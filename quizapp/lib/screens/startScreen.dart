@@ -5,6 +5,7 @@ import 'package:flutter_application_1/widget/ChoiceButton.dart';
 class StartScreen extends StatelessWidget {
   const StartScreen(this.activateScreen, {super.key});
   final void Function(ActiveScreen) activateScreen;
+
   @override
   Widget build(BuildContext context) {
     return Container(

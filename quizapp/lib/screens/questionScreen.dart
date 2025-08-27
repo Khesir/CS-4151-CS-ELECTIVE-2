@@ -4,8 +4,9 @@ import 'package:flutter_application_1/quizManager.dart';
 import 'package:flutter_application_1/data/questions.dart';
 
 class Questionscreen extends StatefulWidget {
-  Questionscreen(this.activateScreen, {super.key});
+  Questionscreen(this.activateScreen, this._selectedAnswers, {super.key});
   final void Function(ActiveScreen) activateScreen;
+  final List<Map<String, int>> _selectedAnswers;
 
   @override
   State<Questionscreen> createState() => _QuestionscreenState();
@@ -14,12 +15,12 @@ class Questionscreen extends StatefulWidget {
 class _QuestionscreenState extends State<Questionscreen> {
   final List<Quizquestion> _questions = questions;
   int _currentQuestionIndex = 0;
-  List<Map<String, int>> _selectedAnswers = [];
   void _nextQuestion(int index) {
     setState(() {
-      _selectedAnswers.add({
+      widget._selectedAnswers.add({
+        "question_index": _currentQuestionIndex,
         "correctAnswer": _questions[_currentQuestionIndex].answerIndex,
-        'answer': index,
+        "answer": index,
       });
       if (_currentQuestionIndex < _questions.length - 1) {
         _currentQuestionIndex++;

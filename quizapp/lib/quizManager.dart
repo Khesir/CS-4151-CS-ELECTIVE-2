@@ -14,6 +14,7 @@ enum ActiveScreen { start, question, result }
 
 class _QuizmanagerState extends State<Quizmanager> {
   Widget? activeScreen;
+  final List<Map<String, int>> _selectedAnswers = [];
 
   @override
   void initState() {
@@ -28,10 +29,10 @@ class _QuizmanagerState extends State<Quizmanager> {
           activeScreen = StartScreen(switchScreen);
           break;
         case ActiveScreen.question:
-          activeScreen = Questionscreen(switchScreen);
+          activeScreen = Questionscreen(switchScreen, _selectedAnswers);
           break;
         case ActiveScreen.result:
-          activeScreen = ResultScreen();
+          activeScreen = ResultScreen(switchScreen, _selectedAnswers);
           break;
       }
     });
